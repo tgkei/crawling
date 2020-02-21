@@ -1,0 +1,8 @@
+chromedrive
+
+#### Python ####
+__pycache__/
+
+
+#### Data ####
+img/*
