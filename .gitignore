@@ -8,5 +8,5 @@ __pycache__/
 
 
 #### Data ####
-img/*
+resources/*
 !*.gitkeep
