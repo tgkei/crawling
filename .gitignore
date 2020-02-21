@@ -1,8 +1,12 @@
 chromedrive
 
+#### idle ####
+.vscode
+
 #### Python ####
 __pycache__/
 
 
 #### Data ####
 img/*
+!*.gitkeep
