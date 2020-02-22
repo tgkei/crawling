@@ -2,14 +2,13 @@
 from selenium import webdriver
 from urllib.request import urlretrieve
 from urllib.parse import quote_plus
-from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import NoSuchElementException as NOERROR
 
+import pickle
 import os
 from pathlib import Path
 import time
 from datetime import datetime
-import urllib.parse
-import urllib.request
 
 _BASE_URL = 'https://www.instagram.com/'
 _USER_ID = "jh.cpp"
@@ -18,7 +17,7 @@ _url = _BASE_URL+ quote_plus(_USER_ID)
 _SRC_DIR = os.getcwd()+"/resources"
 _IMG_DIR = _SRC_DIR+"/img"
 
-_data = {}
+data = {}
 
 def set_driver():
     _DRIVER_PATH = Path(os.getcwd())
@@ -40,7 +39,7 @@ def click_first_image(driver):
 
 def crawl(driver):
     while True: # should be changed later. while img_exits
-        time.sleep(1)
+        time.sleep(0.05)
     
         _overlap_photos = driver.find_elements_by_class_name("Yi5aA")
     
@@ -51,8 +50,6 @@ def crawl(driver):
     
         try:
             nextbtn = driver.find_element_by_class_name('_65Bje.coreSpriteRightPaginationArrow')
-            print("in to next button")
-            print(nextbtn.text)
             if nextbtn.text in ("다음", "Next"):
                 nextbtn.click()
         except:
@@ -63,33 +60,35 @@ def crawl(driver):
 def _save_one_image(driver): 
     try:
         photo = driver.find_element_by_xpath('/html/body/div[4]/div[2]/div/article/div[1]/div/div/div[1]/div[1]/img').get_attribute('src')
-    except NoSuchElementException:
+    except NOERROR:
         photo = driver.find_element_by_xpath('/html/body/div[4]/div[2]/div/article/div[1]/div/div/div[1]/img').get_attribute('src')
-    
-    _cur_time = str(datetime.now())[:-4]+".jpg"
-
-    if photo not in _data:
-        _data[_cur_time] = "tmp"
-    
-    urlretrieve(photo, _IMG_DIR+"/"+_cur_time)
+    _save(photo) 
 
 def _save_images(driver, num_images):
     for n in range(num_images):
         try:
             video = driver.find_element_by_class_name('PyenC')
-            break
-            #continue
-        except NoSuchElementException:
-            temp = n + 1 
-            if(temp != num_images): 
-                photo = driver.find_element_by_xpath("/html/body/div[4]/div[2]/div/article/div[1]/div/div/div[2]/div/div/div/div/ul/li["+str(temp)+"]/div/div/div/div/div[1]/div[1]/img").get_attribute('src')
-            else: 
-                photo = driver.find_element_by_xpath("/html/body/div[4]/div[2]/div/article/div[1]/div/div/div[2]/div/div/div/div/ul/li["+str(temp)+"]/div/div/div/div/div[1]/img").get_attribute('src')
+            continue
+        except NOERROR: 
+            try:
+                photo = driver.find_element_by_xpath(f"/html/body/div[4]/div[2]/div/article/div[1]/div/div/div[2]/div/div/div/div/ul/li[{str(n+1)}]/div/div/div/div/div[1]/div[1]/img").get_attribute('src')
+            except NOERROR: 
+                photo = driver.find_element_by_xpath(f"/html/body/div[4]/div[2]/div/article/div[1]/div/div/div[2]/div/div/div/div/ul/li[{str(n+1)}]/div/div/div/div/div[1]/img").get_attribute('src')
+            
+            _save(photo)
 
             try:
                 driver.find_element_by_class_name('coreSpriteRightChevron').click()
-            except NoSuchElementException:
+            except NOERROR:
                 break
+
+def _save(photo):
+    _cur_time = str(datetime.now())[:-4]+".jpg"
+
+    if photo not in data:
+        data[_cur_time] = "tmp"
+    
+    urlretrieve(photo, _IMG_DIR+"/"+_cur_time)
 
 if __name__=="__main__":
     driver = set_driver()
@@ -97,3 +96,5 @@ if __name__=="__main__":
     login(driver)
     click_first_image(driver) 
     crawl(driver)
+    with open(_SRC_DIR+"/data.pickle", "wb") as f:
+        pickle.dump(data, f)
