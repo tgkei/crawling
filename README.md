@@ -3,6 +3,7 @@
 ## Setting-up:
 Git clone the repo
 Install pipenv (https://pipenv-fork.readthedocs.io/en/latest/basics.html)
+
 On mac :
 ```
 brew install pipenv
