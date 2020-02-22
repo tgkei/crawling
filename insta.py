@@ -47,11 +47,13 @@ def crawl(driver):
         if not _overlap_photos:
             _save_one_image(driver)
         else:
-            _save_images(driver)
+            _save_images(driver, len(_overlap_photos))
     
         try:
             nextbtn = driver.find_element_by_class_name('_65Bje.coreSpriteRightPaginationArrow')
-            if(nextbtn.text == "다음"):
+            print("in to next button")
+            print(nextbtn.text)
+            if nextbtn.text in ("다음", "Next"):
                 nextbtn.click()
         except:
             break
@@ -71,18 +73,18 @@ def _save_one_image(driver):
     
     urlretrieve(photo, _IMG_DIR+"/"+_cur_time)
 
-def _save_images(driver):
-    for n in range(len(_overlap_photos)):
+def _save_images(driver, num_images):
+    for n in range(num_images):
         try:
             video = driver.find_element_by_class_name('PyenC')
             break
+            #continue
         except NoSuchElementException:
             temp = n + 1 
-            if(temp != len(_overlap_photos)): 
+            if(temp != num_images): 
                 photo = driver.find_element_by_xpath("/html/body/div[4]/div[2]/div/article/div[1]/div/div/div[2]/div/div/div/div/ul/li["+str(temp)+"]/div/div/div/div/div[1]/div[1]/img").get_attribute('src')
             else: 
                 photo = driver.find_element_by_xpath("/html/body/div[4]/div[2]/div/article/div[1]/div/div/div[2]/div/div/div/div/ul/li["+str(temp)+"]/div/div/div/div/div[1]/img").get_attribute('src')
-            print(photo)
 
             try:
                 driver.find_element_by_class_name('coreSpriteRightChevron').click()
