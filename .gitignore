@@ -1,6 +1,13 @@
-chromedrive
+### OSX ###
+.DS_Store
 
-#### idle ####
+### extra ###
+chromedriver
+
+### no txt ###
+*.txt
+
+#### idle ###
 .vscode
 
 #### Python ####
@@ -8,5 +15,6 @@ __pycache__/
 
 
 #### Data ####
-resources/*
-!*.gitkeep
+resources/**
+!resources/**/
+!resources/**/.gitkeep
