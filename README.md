@@ -1,6 +1,7 @@
 # crawling
 
 ## Setting-up:
+### Pipenv
 Git clone the repo
 Install pipenv (https://pipenv-fork.readthedocs.io/en/latest/basics.html)
 
@@ -22,6 +23,10 @@ Then install packages through pipenv:
 pipenv install
 pipenv shell
 ```
+### Chromedriver
+Download [chromedriver](https://sites.google.com/a/chromium.org/chromedriver/) and put it into root folder:
+`./`
+
 ## How to run
 ```
 python insta.py
