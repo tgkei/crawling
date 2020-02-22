@@ -30,4 +30,4 @@ python insta.py
 ## Structure
 
 #### resources
-The data that is extracted are installed. Including both {pickle | csv | json} and images
+The data that is extracted are installed. Including both data and images
