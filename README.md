@@ -21,7 +21,7 @@ Then install packages through pipenv:
 pipenv install
 pipenv shell
 ```
-## Run the file
+## How to run
 ```
 python insta.py
 ```
