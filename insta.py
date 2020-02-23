@@ -22,7 +22,7 @@ data = {}
 
 _xpath_base = {
             "one" : "/html/body/div[4]/div[2]/div/article/div[1]/div/div/div[1]/",
-            "many" : "/html/body/div[4]/div[2]/div/article/div[1]/div/div/div[2]/div/div/div/div/ul/li["
+            "many" : "/html/body/div[4]/div[2]/div/article/div[1]/div/div/div[2]/div/div/div/div/ul/li[{}]/div/div/div/div/div[1]/"
         }
 
 def set_driver():
@@ -70,14 +70,14 @@ def _save_image(driver):
     for ext in extensions:
         xpath = _xpath_base["one"]+ext
         try:
-            photo = driver.find_element_by_xpath(xpath)
+            photo = driver.find_element_by_xpath(xpath).get_attribute('src')
             break
         except NOERROR:
-            print("diff xpath")
+            continue
     _save(photo) 
 
 def _save_images(driver, num_images):
-    extensions = ["{str(n+1)}]/div/div/div/div/div[1]/div[1]/img", "{str(n+1)}]/div/div/div/div/div[1]/img"]
+    extensions = ["div[1]/img", "img"]
     for n in range(num_images):
         try:
             video = driver.find_element_by_class_name('PyenC')
@@ -86,10 +86,11 @@ def _save_images(driver, num_images):
             for ext in extensions:
                 xpath = _xpath_base["many"]+ext
                 try:
-                    photo = driver.find_element_by_xpath(xpath.format(n)).get_attribute('src')
+                    photo = driver.find_element_by_xpath(xpath.format(str(n+1))).get_attribute('src')
                     break
                 except NOERROR: 
-                    print("diff xpath") 
+                    continue
+
             _save(photo)
 
             try:
@@ -111,5 +112,6 @@ if __name__=="__main__":
     login(driver)
     click_first_image(driver) 
     crawl(driver)
+
     with open(_SRC_DIR+"/data.pickle", "wb") as f:
         pickle.dump(data, f)
