@@ -4,6 +4,7 @@ from urllib.request import urlretrieve
 from urllib.parse import quote_plus
 from selenium.common.exceptions import NoSuchElementException as NOERROR
 
+import platform
 import pickle
 import os
 from pathlib import Path
@@ -19,10 +20,17 @@ _IMG_DIR = _SRC_DIR+"/img"
 
 data = {}
 
+_xpath_base = {
+            "one" : "/html/body/div[4]/div[2]/div/article/div[1]/div/div/div[1]/",
+            "many" : "/html/body/div[4]/div[2]/div/article/div[1]/div/div/div[2]/div/div/div/div/ul/li[{}]/div/div/div/div/div[1]/"
+        }
+
 def set_driver():
     _DRIVER_PATH = Path(os.getcwd())
-   
-    return webdriver.Chrome(_DRIVER_PATH/"chromedriver")
+    chromedriver = "chromedriver"
+    if platform.system() == "Windows":
+        chromedriver+=".exe"
+    return webdriver.Chrome(_DRIVER_PATH/chromedriver)
 
 def to_main_page(driver):
     driver.get(_url)
@@ -44,7 +52,7 @@ def crawl(driver):
         _overlap_photos = driver.find_elements_by_class_name("Yi5aA")
     
         if not _overlap_photos:
-            _save_one_image(driver)
+            _save_image(driver)
         else:
             _save_images(driver, len(_overlap_photos))
     
@@ -57,24 +65,32 @@ def crawl(driver):
     print("crawler successfully done")
     driver.close()
 
-def _save_one_image(driver): 
-    try:
-        photo = driver.find_element_by_xpath('/html/body/div[4]/div[2]/div/article/div[1]/div/div/div[1]/div[1]/img').get_attribute('src')
-    except NOERROR:
-        photo = driver.find_element_by_xpath('/html/body/div[4]/div[2]/div/article/div[1]/div/div/div[1]/img').get_attribute('src')
+def _save_image(driver): 
+    extensions = ["div[1]/img","img"]
+    for ext in extensions:
+        xpath = _xpath_base["one"]+ext
+        try:
+            photo = driver.find_element_by_xpath(xpath).get_attribute('src')
+            break
+        except NOERROR:
+            continue
     _save(photo) 
 
 def _save_images(driver, num_images):
+    extensions = ["div[1]/img", "img"]
     for n in range(num_images):
         try:
             video = driver.find_element_by_class_name('PyenC')
             continue
         except NOERROR: 
-            try:
-                photo = driver.find_element_by_xpath(f"/html/body/div[4]/div[2]/div/article/div[1]/div/div/div[2]/div/div/div/div/ul/li[{str(n+1)}]/div/div/div/div/div[1]/div[1]/img").get_attribute('src')
-            except NOERROR: 
-                photo = driver.find_element_by_xpath(f"/html/body/div[4]/div[2]/div/article/div[1]/div/div/div[2]/div/div/div/div/ul/li[{str(n+1)}]/div/div/div/div/div[1]/img").get_attribute('src')
-            
+            for ext in extensions:
+                xpath = _xpath_base["many"]+ext
+                try:
+                    photo = driver.find_element_by_xpath(xpath.format(str(n+1))).get_attribute('src')
+                    break
+                except NOERROR: 
+                    continue
+
             _save(photo)
 
             try:
@@ -96,5 +112,6 @@ if __name__=="__main__":
     login(driver)
     click_first_image(driver) 
     crawl(driver)
+
     with open(_SRC_DIR+"/data.pickle", "wb") as f:
         pickle.dump(data, f)
