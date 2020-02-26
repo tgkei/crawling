@@ -10,15 +10,14 @@ import time
 from datetime import datetime
 
 from urllib.request import urlretrieve
-from urllib.parse import quote_plus
 
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException as NOERROR
 
 
 _BASE_URL = "https://www.instagram.com/"
-_USER_ID = "jh.cpp"
-_URL = _BASE_URL + quote_plus(_USER_ID)
+_USER_IDS = ["jh.cpp", "giriboy91"]
+# _url = _BASE_URL + quote_plus(_USER_ID)
 
 _SRC_DIR = os.getcwd() + "/resources"
 _IMG_DIR = _SRC_DIR + "/img"
@@ -44,12 +43,11 @@ def set_driver():
     driver = webdriver.Chrome(_driver_path / chromedriver)
 
 
-def to_main_page():
+def to_main_page(driver):
     """
     get into user page
     """
-    global driver
-    driver.get(_URL)
+    driver.get(_BASE_URL)
     driver.implicitly_wait(3)
 
 
@@ -197,12 +195,18 @@ def _find_hashtag():
         print("No hashtag in this post")
 
 
-if __name__ == "__main__":
-    set_driver()
-    to_main_page()
-    login()
-    click_first_image()
-    crawl()
+def _get_into_page(user_id, driver):
+    driver.get(_BASE_URL + user_id)
 
-    with open(_SRC_DIR + "/data.pickle", "wb") as f:
-        pickle.dump(data, f)
+
+if __name__ == "__main__":
+    driver = set_driver()
+    to_main_page(driver)
+    login(driver)
+    for _user_id in _USER_IDS:
+        _get_into_page(_user_id, driver)
+        click_first_image(driver)
+        crawl(driver)
+        _data_name = "/data_" + _user_id + ".pickle"
+        with open(_SRC_DIR + _data_name, "wb") as f:
+            pickle.dump(data, f)
