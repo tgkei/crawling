@@ -1,6 +1,11 @@
 #!/bin/bash
 
 set -e
+echo '  ___ _   _ ____ _____  _'
+echo ' |_ _| \ | / ___|_   _|/ \'
+echo '  | ||  \| \___ \ | | / _ \'
+echo '  | || |\  |___) || |/ ___ \'
+echo ' |___|_| \_|____/ |_/_/   \_\'
 
 # 지금 virtual environment 에 있는지 확인
 if [ -z "$VIRTUAL_ENV" ]; then
@@ -17,15 +22,8 @@ else
     PIPENV=""
 fi
 
-echo "[1/4] ✨  Running black"
+echo "[1/2] ✨  Running black"
 $PIPENV black --check insta.py 
 
-echo "[2/4] 🔍  Running pylint"
-$PIPENV pylint -f colorized --ignore migrations,tests ai_api image_loader core base lms grpc_server
-
-echo "[3/4] 💭  Running mypy"
-$PIPENV mypy ml --ignore-missing-imports --check-untyped-defs
-
-echo "[4/4] 🚀  Running pytest"
-$PIPENV python manage.py test -v 2 --force-color
-$PIPENV py.test -v --color=yes --disable-warnings test|
+echo "[2/2] 🔍  Running pylint"
+$PIPENV pylint -f colorized insta.py 

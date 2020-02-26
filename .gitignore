@@ -18,6 +18,6 @@ __pycache__/
 
 
 #### Data ####
-resources/**
-!resources/**/
-!resources/**/.gitkeep
+crawler/resources/**
+!crawler/resources/**/
+!crawler/resources/**/.gitkeep
