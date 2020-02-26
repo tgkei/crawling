@@ -152,12 +152,17 @@ def _find_hashtag(driver):
         print("No hashtag in this post")
 
 
+def check_change(url):
+    tmp = _BASE_URL+url
+
 if __name__ == "__main__":
     driver = set_driver()
     to_main_page(driver)
     login(driver)
     click_first_image(driver)
     crawl(driver)
-
+    check_change("giriboy91")
     with open(_SRC_DIR + "/data.pickle", "wb") as f:
         pickle.dump(data, f)
+    
+
