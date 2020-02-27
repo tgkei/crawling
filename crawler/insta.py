@@ -23,15 +23,12 @@ _URL = _BASE_URL + quote_plus(_USER_ID)
 _SRC_DIR = os.getcwd() + "/resources"
 _IMG_DIR = _SRC_DIR + "/img"
 
-# pylint: disable=C0103
 data = {}
-# pylint: disable=C0103
 driver = None
 
-# pylint: disable=line-too-long
 _XPATH_BASE = {
     "one": "/html/body/div[4]/div[2]/div/article/div[1]/div/div/div[1]/",
-    "many": "/html/body/div[4]/div[2]/div/article/div[1]/div/div/div[2]/div/div/div/div/ul/li[{}]/div/div/div/div/div[1]/",
+    "many": "/html/body/div[4]/div[2]/div/article/div[1]/div/div/div[2]/div/div/div/div/ul/li[{}]/div/div/div/div/div[1]/",  # noqa: E501
 }
 
 
@@ -39,7 +36,7 @@ def set_driver():
     """
     set Chromedriver
     """
-    global driver  # pylint: disable=W0603
+    global driver
     _driver_path = Path(os.getcwd())
     chromedriver = "chromedriver"
     if platform.system() == "Windows":
@@ -51,7 +48,7 @@ def to_main_page():
     """
     get into user page
     """
-    global driver  # pylint: disable=W0603
+    global driver
     driver.get(_URL)
     driver.implicitly_wait(3)
 
@@ -60,14 +57,14 @@ def login():
     """
     login
     """
-    global driver  # pylint: disable=W0603
+    global driver
     driver.find_element_by_xpath(
-        '//*[@id="react-root"]/section/nav/div[2]/div/div/div[3]/div/span/a[1]/button'
+        '//*[@id="react-root"]/section/nav/div[2]/div/div/div[3]/div/span/a[1]/button'  # noqa: E501
     ).click()
     driver.find_element_by_name("username").send_keys("dlehgus5656@naver.com")
     driver.find_element_by_name("password").send_keys("akdntm1212!")
     driver.find_element_by_xpath(
-        '//*[@id="react-root"]/section/main/div/article/div/div[1]/div/form/div[4]'
+        '//*[@id="react-root"]/section/main/div/article/div/div[1]/div/form/div[4]'  # noqa: E501
     ).click()
 
 
@@ -75,7 +72,7 @@ def click_first_image():
     """
     get into first image
     """
-    global driver  # pylint: disable=W0603
+    global driver
     driver.find_element_by_class_name("_9AhH0").click()
 
 
@@ -83,7 +80,7 @@ def crawl():
     """
     crawl while there is image
     """
-    global driver  # pylint: disable=W0603
+    global driver
     while True:  # should be changed later. while img_exits
         time.sleep(1)
 
@@ -107,7 +104,7 @@ def crawl():
             )
             if nextbtn.text in ("다음", "Next"):
                 nextbtn.click()
-        except:  # pylint: disable=W0702
+        except:  # noqa: E722
             break
     print("crawler successfully done")
     driver.close()
@@ -117,7 +114,7 @@ def _save_image():
     """
     save image if there is only one image in post
     """
-    global driver  # pylint: disable=W0603
+    global driver
     extensions = ["div[1]/img", "img"]
     for ext in extensions:
         xpath = _XPATH_BASE["one"] + ext
@@ -133,7 +130,7 @@ def _save_images(num_images):
     """
     save images if there are many images in post
     """
-    global driver  # pylint: disable=W0603
+    global driver
     extensions = ["div[1]/img", "img"]
     _img_name = []
     for n in range(num_images):
@@ -154,7 +151,9 @@ def _save_images(num_images):
             _img_name.append(_save(photo))
 
             try:
-                driver.find_element_by_class_name("coreSpriteRightChevron").click()
+                driver.find_element_by_class_name(
+                    "coreSpriteRightChevron"
+                ).click()  # noqa: E501
             except NOERROR:
                 break
     return _img_name
@@ -170,7 +169,7 @@ def _save(photo):
 
     try:
         urlretrieve(photo, _IMG_DIR + "/" + _cur_time)
-    except:  # pylint: disable=W0702
+    except:  # noqa: E722
         print("name:", _cur_time)
         print(photo)
     return _cur_time
@@ -180,7 +179,7 @@ def _find_hashtag():
     """
     crawl hashtag
     """
-    global driver  # pylint: disable=W0603
+    global driver
     try:
         driver.find_element_by_class_name("EizgU").click()
     except NOERROR:
